@@ -12,6 +12,10 @@
         <h1>Kalimba Song Composer</h1>
         <form id="kalimba"></form>
         <div id="song-display"></div>
+        <div id="process-buttons" style="display: none">
+            <button id="write-file-button">write to file</button>
+            <button id="clear-song-button">clear song</button>
+        </div>
 
         <script type="module">
             import {
@@ -20,14 +24,39 @@
             } from "./kalimba-data.js";
 
             const kalimbaForm = document.querySelector("#kalimba"),
-                songDisplayElem = document.querySelector("#song-display");
+                songDisplayElem = document.querySelector("#song-display"),
+                processButtons = document.querySelector("#process-buttons"),
+                clearSongButton = document.querySelector("#clear-song-button"),
+                writeFileButton = document.querySelector("#write-file-button");
 
             kalimbaForm.innerHTML = getKalimbaFormHTML();
             kalimbaForm.onsubmit = (e) => {
                 e.preventDefault();
                 const line = getLineFromKalimbaFormData(new FormData(e.target));
                 songDisplayElem.innerHTML += line + "\n";
+                processButtons.style.display = "block";
             };
+
+            clearSongButton.onclick = () => {
+                songDisplayElem.innerHTML = "";
+                processButtons.style.display = "none";
+            };
+
+            writeFileButton.onclick = () =>
+                download("my-song.txt", songDisplayElem.innerHTML);
+
+            function download(filename, text) {
+                const element = document.createElement("a");
+                element.setAttribute(
+                    "href",
+                    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
+                );
+                element.setAttribute("download", filename);
+                element.style.display = "none";
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+            }
         </script>
     </body>
 </html>
