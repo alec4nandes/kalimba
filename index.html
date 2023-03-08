@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="style.css" />
+        <title>Kalimba Song Composer</title>
+    </head>
+
+    <body>
+        <h1>Kalimba Song Composer</h1>
+        <form id="kalimba"></form>
+        <div id="song-display"></div>
+
+        <script type="module">
+            import {
+                getKalimbaFormHTML,
+                getLineFromKalimbaFormData,
+            } from "./kalimba-data.js";
+
+            const kalimbaForm = document.querySelector("#kalimba"),
+                songDisplayElem = document.querySelector("#song-display");
+
+            kalimbaForm.innerHTML = getKalimbaFormHTML();
+            kalimbaForm.onsubmit = (e) => {
+                e.preventDefault();
+                const line = getLineFromKalimbaFormData(new FormData(e.target));
+                songDisplayElem.innerHTML += line + "\n";
+            };
+        </script>
+    </body>
+</html>
