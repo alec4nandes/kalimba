@@ -10,52 +10,76 @@
 
     <body>
         <h1>Kalimba Song Composer</h1>
-        <form id="kalimba"></form>
+        <form id="upload-song">
+            <label>upload song: <input type="file" name="upload" /></label>
+            <button type="submit">upload</button>
+        </form>
         <div id="song-display"></div>
+        <form id="kalimba"></form>
         <div id="process-buttons" style="display: none">
             <button id="write-file-button">write to file</button>
             <button id="clear-song-button">clear song</button>
         </div>
 
         <script type="module">
-            import {
-                getKalimbaFormHTML,
-                getLineFromKalimbaFormData,
-            } from "./kalimba-data.js";
+            import Line from "./classes/Line.js";
+            import Song from "./classes/Song.js";
+            import { getKalimbaFormHTML } from "./kalimba-data.js";
 
-            const kalimbaForm = document.querySelector("#kalimba"),
+            let song = new Song();
+            const uploadSong = document.querySelector("#upload-song"),
                 songDisplayElem = document.querySelector("#song-display"),
+                kalimbaForm = document.querySelector("#kalimba"),
                 processButtons = document.querySelector("#process-buttons"),
-                clearSongButton = document.querySelector("#clear-song-button"),
-                writeFileButton = document.querySelector("#write-file-button");
+                writeFileButton = document.querySelector("#write-file-button"),
+                clearSongButton = document.querySelector("#clear-song-button");
 
-            kalimbaForm.innerHTML = getKalimbaFormHTML();
-            kalimbaForm.onsubmit = (e) => {
+            uploadSong.onsubmit = (e) => {
                 e.preventDefault();
-                const line = getLineFromKalimbaFormData(new FormData(e.target));
-                songDisplayElem.innerHTML += line + "\n";
+                const fr = new FileReader(),
+                    file = e.target.upload.files[0];
+                fr.addEventListener(
+                    "load",
+                    () => {
+                        // this will then display a text file
+                        song = new Song(fr.result);
+                        updateSong();
+                    },
+                    false
+                );
+                fr.readAsText(file);
                 processButtons.style.display = "block";
             };
 
+            kalimbaForm.innerHTML = getKalimbaFormHTML();
+
+            kalimbaForm.onsubmit = (e) => {
+                e.preventDefault();
+                const formData = new Map(
+                    [...new FormData(e.target).entries()]
+                        .filter(([key]) => key !== "note-length")
+                        .map(([key]) => [key, e.target["note-length"].value])
+                );
+                song.addLine(new Line(formData));
+                updateSong();
+                processButtons.style.display = "block";
+            };
+
+            writeFileButton.onclick = () => song.writeFile();
+
             clearSongButton.onclick = () => {
-                songDisplayElem.innerHTML = "";
+                song = new Song();
+                updateSong();
                 processButtons.style.display = "none";
             };
 
-            writeFileButton.onclick = () =>
-                download("my-song.txt", songDisplayElem.innerHTML);
+            updateSong();
 
-            function download(filename, text) {
-                const element = document.createElement("a");
-                element.setAttribute(
-                    "href",
-                    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
-                );
-                element.setAttribute("download", filename);
-                element.style.display = "none";
-                document.body.appendChild(element);
-                element.click();
-                document.body.removeChild(element);
+            function updateSong() {
+                songDisplayElem.innerHTML = song
+                    .getLines()
+                    .map((line) => line.getLineHTML())
+                    .join("");
             }
         </script>
     </body>
