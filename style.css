@@ -10,8 +10,38 @@ body #song-display {
 body #song-display .line {
   display: flex;
 }
-body #song-display .line img {
+body #song-display .line:first-child {
+  text-align: center;
+}
+body #song-display .line:first-child .note-container {
+  height: -moz-fit-content;
+  height: fit-content;
+}
+body #song-display .line .note-container {
   height: 20px;
+  width: 20px;
+  font-size: 0.7rem;
+  position: relative;
+}
+body #song-display .line .note-container > * {
+  position: relative;
+  z-index: 1;
+}
+body #song-display .line .note-container:not(:first-child)::after {
+  border-left: 0.25px solid #eee;
+  border-right: 0.25px solid #eee;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+body #song-display .line .note-container:nth-child(2)::after, body #song-display .line .note-container:nth-child(6)::after, body #song-display .line .note-container:nth-child(7)::after, body #song-display .line .note-container:nth-child(10)::after, body #song-display .line .note-container:nth-child(13)::after, body #song-display .line .note-container:nth-child(15)::after, body #song-display .line .note-container:nth-child(18)::after, body #song-display .line .note-container:nth-child(21)::after, body #song-display .line .note-container:nth-child(23)::after, body #song-display .line .note-container:nth-child(26)::after {
+  background-color: lightpink;
+}
+body #song-display .line .note-container img {
+  height: 100%;
 }
 body h1 {
   text-align: center;

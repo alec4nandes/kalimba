@@ -36,7 +36,13 @@ export default class Line {
                         : "mast"
                 ),
             ]
-                .map((item) => `<img src="/assets/${item}.png" />`)
+                .map(
+                    (item) => `
+                        <div class="note-container">
+                            <img src="/assets/${item}.png" />
+                        </div>
+                    `
+                )
                 .join("");
         return `<div class="line">${result}</div>`;
     }

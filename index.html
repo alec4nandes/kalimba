@@ -24,12 +24,14 @@
         <script type="module">
             import Line from "./classes/Line.js";
             import Song from "./classes/Song.js";
-            import { getKalimbaFormHTML } from "./kalimba-data.js";
+            import {
+                allNotes,
+                getSelectNoteLengthHTML,
+            } from "./kalimba-data.js";
 
             let song = new Song();
             const uploadSong = document.querySelector("#upload-song"),
                 songDisplayElem = document.querySelector("#song-display"),
-                kalimbaForm = document.querySelector("#kalimba"),
                 processButtons = document.querySelector("#process-buttons"),
                 writeFileButton = document.querySelector("#write-file-button"),
                 clearSongButton = document.querySelector("#clear-song-button");
@@ -51,20 +53,6 @@
                 processButtons.style.display = "block";
             };
 
-            kalimbaForm.innerHTML = getKalimbaFormHTML();
-
-            kalimbaForm.onsubmit = (e) => {
-                e.preventDefault();
-                const formData = new Map(
-                    [...new FormData(e.target).entries()]
-                        .filter(([key]) => key !== "note-length")
-                        .map(([key]) => [key, e.target["note-length"].value])
-                );
-                song.addLine(new Line(formData));
-                updateSong();
-                processButtons.style.display = "block";
-            };
-
             writeFileButton.onclick = () => song.writeFile();
 
             clearSongButton.onclick = () => {
@@ -76,10 +64,72 @@
             updateSong();
 
             function updateSong() {
-                songDisplayElem.innerHTML = song
-                    .getLines()
-                    .map((line) => line.getLineHTML())
-                    .join("");
+                const header = `
+                    <div class="line">
+                        ${["", ...allNotes]
+                            .map(
+                                (note) => `
+                                    <div class="note-container">
+                                        <span>
+                                            ${note[0] || ""}
+                                            <br/>
+                                            ${
+                                                note
+                                                    ?.slice(1)
+                                                    .replace("*", "") || ""
+                                            }
+                                            <br/>
+                                            ${
+                                                note.includes("*")
+                                                    ? "&bull;"
+                                                    : "&nbsp;"
+                                            }
+                                        </span>
+                                    </div>
+                                `
+                            )
+                            .join("")}
+                    </div>`,
+                    lines = song
+                        .getLines()
+                        .map((line) => line.getLineHTML())
+                        .join(""),
+                    form = `
+                        <form id="add-line">
+                            <div class="line">
+                                ${["", ...allNotes]
+                                    .map(
+                                        (note, i) => `
+                                            <div class="note-container">
+                                                ${
+                                                    i
+                                                        ? `<input type="checkbox" name="${note}" />`
+                                                        : `<button type="submit">+</button>`
+                                                }
+                                            </div>
+                                        `
+                                    )
+                                    .join("")}
+                            </div>
+                            <div style="text-align: center">
+                                <label>note: ${getSelectNoteLengthHTML()}</label>
+                            </div>
+                        </form>`;
+                songDisplayElem.innerHTML = header + lines + form;
+                document.querySelector("#add-line").onsubmit = (e) => {
+                    e.preventDefault();
+                    const formData = new Map(
+                        [...new FormData(e.target).entries()]
+                            .filter(([key]) => key !== "note-length")
+                            .map(([key]) => [
+                                key,
+                                e.target["note-length"].value,
+                            ])
+                    );
+                    song.addLine(new Line(formData));
+                    updateSong();
+                    processButtons.style.display = "block";
+                };
             }
         </script>
     </body>
