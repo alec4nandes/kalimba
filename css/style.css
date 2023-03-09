@@ -1,0 +1,110 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+body h1 {
+  text-align: center;
+}
+body #song {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+body #song #upload-song,
+body #song #song-buttons {
+  margin-bottom: 20px;
+  text-align: center;
+}
+body #song #upload-song input {
+  background-color: #eee;
+}
+body #song form#add-notes.s input[type=checkbox]:checked, body #song form#add-notes.e input[type=checkbox]:checked, body #song form#add-notes.q input[type=checkbox]:checked {
+  background-image: url("../assets/black-end.png");
+}
+body #song form#add-notes.h input[type=checkbox]:checked {
+  background-image: url("../assets/white-end.png");
+}
+body #song form#add-notes.w input[type=checkbox]:checked {
+  background-image: url("../assets/whole.png");
+}
+body #song form#add-notes input[type=checkbox] {
+  height: 12px;
+  width: 12px;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  margin: 0;
+}
+body #song form#add-notes input[type=checkbox]:checked {
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 95%;
+  border: 0;
+}
+body #song form#add-notes label:hover {
+  cursor: pointer;
+}
+body #song form#add-notes .line .note-container:first-child,
+body #song form#add-notes .line .note-container label {
+  padding-bottom: 20px;
+}
+body #song form#add-notes .line .note-container select#note-length {
+  flex: 1;
+}
+body #song form#add-notes .line .note-container #clear {
+  color: blue;
+  text-decoration: underline;
+}
+body #song form#add-notes .line .note-container #clear:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}
+body #song .line {
+  display: flex;
+}
+body #song .line .note-container {
+  width: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  font-size: 0.7rem;
+  padding: 5px 0;
+  position: relative;
+  text-align: center;
+}
+body #song .line .note-container > * {
+  position: relative;
+  z-index: 1;
+}
+body #song .line .note-container:first-child {
+  width: 40px;
+}
+body #song .line .note-container:not(:first-child)::after {
+  border-left: 0.25px solid #eee;
+  border-right: 0.25px solid #eee;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+body #song .line .note-container:nth-child(6)::after, body #song .line .note-container:nth-child(21)::after {
+  border-right: 1px solid red;
+}
+body #song .line .note-container:nth-child(7)::after, body #song .line .note-container:nth-child(22)::after {
+  border-left: 1px solid red;
+}
+body #song .line .note-container:nth-child(2)::after, body #song .line .note-container:nth-child(6)::after, body #song .line .note-container:nth-child(7)::after, body #song .line .note-container:nth-child(10)::after, body #song .line .note-container:nth-child(13)::after, body #song .line .note-container:nth-child(15)::after, body #song .line .note-container:nth-child(18)::after, body #song .line .note-container:nth-child(21)::after, body #song .line .note-container:nth-child(23)::after, body #song .line .note-container:nth-child(26)::after {
+  background-color: rgb(255, 234, 237);
+}
+body #song .line .note-container.flag {
+  align-items: flex-end;
+}
+body #song .line .note-container img {
+  height: 20px;
+  width: 20px;
+}/*# sourceMappingURL=style.css.map */

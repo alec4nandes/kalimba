@@ -1,4 +1,4 @@
-import { allNotes } from "../kalimba-data.js";
+import { allNotes } from "../scripts/kalimba-data.js";
 
 export default class Line {
     constructor(notes) {
@@ -8,7 +8,7 @@ export default class Line {
         );
     }
 
-    getNotes() {
+    getNotesJSON() {
         return JSON.stringify([...this.notes.entries()]);
     }
 
@@ -37,8 +37,8 @@ export default class Line {
                 ),
             ]
                 .map(
-                    (item) => `
-                        <div class="note-container">
+                    (item, i) => `
+                        <div class="note-container ${i ? "" : "flag"}">
                             <img src="/assets/${item}.png" />
                         </div>
                     `

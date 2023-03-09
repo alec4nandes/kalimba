@@ -26,20 +26,4 @@ const noteLengths = ["sixteenth", "eighth", "quarter", "half", "whole"],
     ]),
     allNotes = [...tines.values()].flat(Infinity);
 
-function getSelectNoteLengthHTML() {
-    const options = noteLengths
-        .map(
-            (len) => `
-                        <option
-                            value="${len[0]}"
-                            ${len === "quarter" ? "selected" : ""}
-                        >
-                            ${len}
-                        </option>
-                    `
-        )
-        .join("");
-    return `<select name="note-length">${options}</select>`;
-}
-
-export { allNotes, getSelectNoteLengthHTML };
+export { allNotes, noteLengths };

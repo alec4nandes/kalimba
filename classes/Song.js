@@ -8,18 +8,18 @@ export default class Song {
                 .map((line) => new Line(new Map(JSON.parse(line)))) || [];
     }
 
-    getLines() {
-        return this.lines;
+    getLinesHTML() {
+        return this.lines.map((line) => line.getLineHTML()).join("");
     }
 
     addLine(line) {
-        this.lines.push(line);
+        this.lines.unshift(line);
     }
 
     writeFile() {
         this.#download(
             "my-song.txt",
-            this.lines.map((line) => line.getNotes()).join("\n")
+            this.lines.map((line) => line.getNotesJSON()).join("\n")
         );
     }
 

@@ -1,0 +1,161 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+
+    h1 {
+        text-align: center;
+    }
+
+    #song {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        #upload-song,
+        #song-buttons {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #upload-song {
+            input {
+                background-color: #eee;
+            }
+        }
+
+        form#add-notes {
+            &.s,
+            &.e,
+            &.q {
+                input[type="checkbox"]:checked {
+                    background-image: url("../assets/black-end.png");
+                }
+            }
+
+            &.h {
+                input[type="checkbox"]:checked {
+                    background-image: url("../assets/white-end.png");
+                }
+            }
+
+            &.w {
+                input[type="checkbox"]:checked {
+                    background-image: url("../assets/whole.png");
+                }
+            }
+
+            input[type="checkbox"] {
+                height: 12px;
+                width: 12px;
+                appearance: none;
+                background-color: #eee;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+                margin: 0;
+
+                &:checked {
+                    background-color: transparent;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-size: 95%;
+                    border: 0;
+                }
+            }
+
+            label {
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+
+            .line {
+                .note-container {
+                    &:first-child,
+                    label {
+                        padding-bottom: 20px;
+                    }
+
+                    select#note-length {
+                        flex: 1;
+                    }
+
+                    #clear {
+                        color: blue;
+                        text-decoration: underline;
+
+                        &:hover {
+                            cursor: pointer;
+                            opacity: 0.6;
+                        }
+                    }
+                }
+            }
+        }
+
+        .line {
+            display: flex;
+
+            .note-container {
+                width: 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                font-size: 0.7rem;
+                padding: 5px 0;
+                position: relative;
+                text-align: center;
+
+                & > * {
+                    position: relative;
+                    z-index: 1;
+                }
+
+                &:first-child {
+                    width: 40px;
+                }
+
+                &:not(:first-child)::after {
+                    border-left: 0.25px solid #eee;
+                    border-right: 0.25px solid #eee;
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                }
+
+                &:nth-child(6)::after,
+                &:nth-child(21)::after {
+                    border-right: 1px solid red;
+                }
+
+                &:nth-child(7)::after,
+                &:nth-child(22)::after {
+                    border-left: 1px solid red;
+                }
+
+                &:nth-child(2)::after,
+                &:nth-child(6)::after,
+                &:nth-child(7)::after,
+                &:nth-child(10)::after,
+                &:nth-child(13)::after,
+                &:nth-child(15)::after,
+                &:nth-child(18)::after,
+                &:nth-child(21)::after,
+                &:nth-child(23)::after,
+                &:nth-child(26)::after {
+                    background-color: rgb(255, 234, 237);
+                }
+
+                &.flag {
+                    align-items: flex-end;
+                }
+
+                img {
+                    height: 20px;
+                    width: 20px;
+                }
+            }
+        }
+    }
+}
