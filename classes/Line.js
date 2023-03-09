@@ -8,8 +8,10 @@ export default class Line {
         );
     }
 
-    getNotesJSON() {
-        return JSON.stringify([...this.notes.entries()]);
+    getNotesString() {
+        return JSON.stringify(
+            [...this.notes.entries()].filter(([key, value]) => value)
+        );
     }
 
     getLineHTML() {

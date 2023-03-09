@@ -19,7 +19,7 @@ export default class Song {
     writeFile() {
         this.#download(
             "my-song.txt",
-            this.lines.map((line) => line.getNotesJSON()).join("\n")
+            this.lines.map((line) => line.getNotesString()).join("\n")
         );
     }
 
