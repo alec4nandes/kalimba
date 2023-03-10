@@ -121,10 +121,10 @@ body #song .line .note-container:not(:first-child):not(:last-child)::after {
   left: 0;
 }
 body #song .line .note-container:nth-child(6)::after, body #song .line .note-container:nth-child(21)::after {
-  border-right: 1px solid red;
+  border-right: 1px solid red !important;
 }
 body #song .line .note-container:nth-child(7)::after, body #song .line .note-container:nth-child(22)::after {
-  border-left: 1px solid red;
+  border-left: 1px solid red !important;
 }
 body #song .line .note-container:nth-child(2)::after, body #song .line .note-container:nth-child(6)::after, body #song .line .note-container:nth-child(7)::after, body #song .line .note-container:nth-child(10)::after, body #song .line .note-container:nth-child(13)::after, body #song .line .note-container:nth-child(15)::after, body #song .line .note-container:nth-child(18)::after, body #song .line .note-container:nth-child(21)::after, body #song .line .note-container:nth-child(23)::after, body #song .line .note-container:nth-child(26)::after {
   background-color: rgb(255, 234, 237);

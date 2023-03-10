@@ -28,7 +28,7 @@ function getSelectNoteLengthHTML() {
                         </option>
                     `,
                     `
-                        <option value="${len[0]}-dot">
+                        <option value="${len[0]}.">
                             ${len[0].toUpperCase()}&bull;
                         </option>
                     `,

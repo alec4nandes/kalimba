@@ -66,7 +66,7 @@ function addRemoveLineButtonHandlers(song) {
 
 function handleChangeNoteLength(e) {
     const addNotesForm = document.querySelector("#add-notes");
-    addNotesForm.className = e.target.value;
+    addNotesForm.className = e.target.value.replace(".", "-dot");
 }
 
 function handleClearInputs() {
@@ -103,8 +103,18 @@ function handleUploadSong(e) {
     });
 }
 
+function handleTimeSigFormSubmit(e, song) {
+    e.preventDefault();
+    const topNum = e.target["num-notes"].value,
+        bottomNum = e.target["note-length"].value,
+        timeSig = `${topNum}/${bottomNum}`;
+    song.setTimeSig(timeSig);
+    displayComposedNotes(song);
+}
+
 export {
     addReplaceLineButtonHandlers,
+    handleTimeSigFormSubmit,
     handleAddNotesFormSubmit,
     handleChangeNoteLength,
     handleClearInputs,

@@ -19,14 +19,17 @@
                 <button id="save-song">save song</button>
                 <button id="new-song">new song</button>
             </div>
+            <form id="time-sig"></form>
             <form id="add-notes" class="q"></form>
             <div id="composed-notes"></div>
         </div>
 
         <script type="module">
             import Song from "./classes/Song.js";
+            import getTimeSigFormHTML from "./scripts/time-sig.js";
             import getAddNotesFormHTML from "./scripts/add-notes.js";
             import {
+                handleTimeSigFormSubmit,
                 handleAddNotesFormSubmit,
                 handleChangeNoteLength,
                 handleClearInputs,
@@ -35,6 +38,10 @@
             } from "./scripts/handlers.js";
 
             let song = new Song();
+
+            const timeSig = document.querySelector("#time-sig");
+            timeSig.innerHTML = getTimeSigFormHTML();
+            timeSig.onsubmit = (e) => handleTimeSigFormSubmit(e, song);
 
             const addNotesForm = document.querySelector("#add-notes");
             addNotesForm.innerHTML = getAddNotesFormHTML();

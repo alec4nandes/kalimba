@@ -166,12 +166,12 @@ body {
 
                 &:nth-child(6)::after,
                 &:nth-child(21)::after {
-                    border-right: 1px solid red;
+                    border-right: 1px solid red !important;
                 }
 
                 &:nth-child(7)::after,
                 &:nth-child(22)::after {
-                    border-left: 1px solid red;
+                    border-left: 1px solid red !important;
                 }
 
                 &:nth-child(2)::after,
