@@ -4,6 +4,7 @@ export default function getTimeSigFormHTML() {
     const bottomNums = { s: 16, e: 8, q: 4, h: 2, w: 1 };
 
     return `
+        <div id="display-time-sig">time signature: <span>4/4</span></div>
         <label>
             number:
             <input name="num-notes" type="number" value="4" min="1" />

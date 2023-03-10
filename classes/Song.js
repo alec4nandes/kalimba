@@ -83,8 +83,23 @@ export default class Song {
     }
 
     setTimeSig(timeSig) {
-        this.timeSig = timeSig;
-        this.#addRemoveHelper();
+        // combine bars with old time sig:
+        const combined = this.#combineLinkedBars(this.lines);
+        if (combined) {
+            const oldLines = this.lines,
+                oldTimeSig = this.timeSig;
+            this.lines = combined;
+            this.timeSig = timeSig;
+            const result = this.#addRemoveHelper();
+            if (!result) {
+                this.lines = oldLines;
+                this.timeSig = oldTimeSig;
+            } else {
+                document
+                    .querySelector("#display-time-sig")
+                    .querySelector("span").innerText = this.timeSig;
+            }
+        }
     }
 
     addLine(line, index) {
@@ -94,6 +109,7 @@ export default class Song {
             this.lines.push(line);
         }
         this.#addRemoveHelper();
+        console.log(this.connectedMeasures);
     }
 
     replaceLine(line, index) {
@@ -107,12 +123,19 @@ export default class Song {
     }
 
     #addRemoveHelper() {
-        const result = this.#findMeasuresRecursive(
-            this.lines,
-            this.connectedMeasures
-        );
-        this.lines = result.lines;
-        this.connectedMeasures = result.connectedMeasures;
+        const combined = this.#combineLinkedBars(this.lines);
+        if (combined) {
+            const result = this.#findMeasuresRecursive(combined);
+            if (result) {
+                this.lines = result.lines;
+                this.connectedMeasures = result.connectedMeasures;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     #findMeasuresRecursive(lines, connectedMeasures = [], measureCount = 0) {
@@ -144,19 +167,71 @@ export default class Song {
                     !isRest && connectedMeasures.push(++measureCount);
                     result = this.#findMeasuresRecursive(
                         newLines,
-                        connectedMeasures,
-                        measureCount
+                        connectedMeasures
                     );
                 } else {
-                    lines.pop();
-                    result = lines;
+                    return false;
                 }
                 break;
             }
         }
-        return Array.isArray(result)
-            ? { lines: result, measureCount, connectedMeasures }
-            : result;
+        return result
+            ? Array.isArray(result)
+                ? { lines: result, measureCount, connectedMeasures }
+                : result
+            : false;
+    }
+
+    #combineLinkedBars(lines) {
+        const max = this.#getMaxBar(),
+            combined = [];
+        let measure = 0,
+            total = 0,
+            lastLineWasCombined = false;
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i],
+                n = line.getNote(),
+                note = n.replace("r", ""),
+                isRest = n.includes("r"),
+                noteSize = this.#noteInfo[note],
+                pushLine = (line) =>
+                    lastLineWasCombined
+                        ? (lastLineWasCombined = false)
+                        : combined.push(line);
+            total += noteSize;
+            // hit end of bar:
+            if (total === max) {
+                ++measure;
+                total = 0;
+                if (this.connectedMeasures.includes(measure)) {
+                    // connect this line and the next:
+                    const nextLine = lines[i + 1];
+                    if (nextLine) {
+                        const combinedLength =
+                                noteSize +
+                                this.#noteInfo[
+                                    nextLine.getNote().replace("r", "")
+                                ],
+                            newLine = this.#makeNewLine(
+                                combinedLength,
+                                line,
+                                isRest
+                            );
+                        if (newLine) {
+                            newLine && combined.push(newLine);
+                            lastLineWasCombined = true;
+                        } else {
+                            return false;
+                        }
+                    }
+                } else {
+                    pushLine(line);
+                }
+            } else {
+                pushLine(line);
+            }
+        }
+        return combined;
     }
 
     #makeNewLine(noteLength, line, isRest) {
@@ -167,10 +242,11 @@ export default class Song {
             return line.replaceNoteLength(noteLetter + (isRest ? "r" : ""));
         } catch (err) {
             alert(
-                "The note had to be split accross bars, but one note has an invalid length of " +
+                "A note had to be split accross bars, but one split note has an invalid length of " +
                     noteLength +
-                    ". Please choose another note length."
+                    ". Please choose another note length or time signature."
             );
+            return false;
         }
     }
 
