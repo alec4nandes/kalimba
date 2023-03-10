@@ -26,10 +26,6 @@ export default class Song {
         "w.": 1.5,
     };
 
-    setTimeSig(timeSig) {
-        this.timeSig = timeSig;
-    }
-
     #getMaxBar() {
         const [numberOf, notes] = this.timeSig.split("/").map((str) => +str),
             max = numberOf * (1 / notes);
@@ -84,6 +80,11 @@ export default class Song {
         console.log(copy);
         copy.reverse();
         return copy.join("");
+    }
+
+    setTimeSig(timeSig) {
+        this.timeSig = timeSig;
+        this.#addRemoveHelper();
     }
 
     addLine(line, index) {
