@@ -31,15 +31,35 @@ body {
                 }
             }
 
+            &.s-dot,
+            &.e-dot,
+            &.q-dot {
+                input[type="checkbox"]:checked {
+                    background-image: url("../assets/black-dot-end.png");
+                }
+            }
+
             &.h {
                 input[type="checkbox"]:checked {
                     background-image: url("../assets/white-end.png");
                 }
             }
 
+            &.h-dot {
+                input[type="checkbox"]:checked {
+                    background-image: url("../assets/white-dot-end.png");
+                }
+            }
+
             &.w {
                 input[type="checkbox"]:checked {
                     background-image: url("../assets/whole.png");
+                }
+            }
+
+            &.w-dot {
+                input[type="checkbox"]:checked {
+                    background-image: url("../assets/whole-dot.png");
                 }
             }
 
@@ -113,7 +133,27 @@ body {
                     width: 40px;
                 }
 
-                &:not(:first-child)::after {
+                &:last-child {
+                    width: 80px;
+                    flex-direction: row;
+                    gap: 3px;
+                    justify-content: space-evenly;
+
+                    button {
+                        appearance: none;
+                        background-color: lavender;
+                        border: 0;
+                        border-radius: 3px;
+                        flex: 1;
+
+                        &:hover {
+                            cursor: pointer;
+                            opacity: 0.6;
+                        }
+                    }
+                }
+
+                &:not(:first-child):not(:last-child)::after {
                     border-left: 0.25px solid #eee;
                     border-right: 0.25px solid #eee;
                     content: "";

@@ -80,6 +80,12 @@ export default class Line {
             <div class="line">
                 ${result}
                 <div class="note-container">
+                    <button class="replace-line" data-index="${index}">
+                        +
+                    </button>
+                    <button class="add-line-below" data-index="${index}">
+                        +v
+                    </button>
                     <button class="remove-line" data-index="${index}">
                         x
                     </button>

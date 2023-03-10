@@ -18,16 +18,22 @@ function getSelectNoteLengthHTML() {
     return `
         <select id="note-length" name="note-length">
             ${noteLengths
-                .map(
-                    (len) => `
+                .map((len) => [
+                    `
                         <option
                             value="${len[0]}"
                             ${len === "quarter" ? "selected" : ""}
                         >
                             ${len[0].toUpperCase()}
                         </option>
+                    `,
                     `
-                )
+                        <option value="${len[0]}-dot">
+                            ${len[0].toUpperCase()}&bull;
+                        </option>
+                    `,
+                ])
+                .flat()
                 .join("")}
         </select>
     `;

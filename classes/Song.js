@@ -70,6 +70,7 @@ export default class Song {
                                                 `
                                             )
                                             .join(""),
+                                        `<div class="note-container"></div>`,
                                     ].join("")}
                                 </div>`
                             : [],
@@ -81,8 +82,17 @@ export default class Song {
         return copy.join("");
     }
 
-    addLine(line) {
-        this.lines.push(line);
+    addLine(line, index) {
+        if (index !== undefined) {
+            this.lines.splice(index, 0, line);
+        } else {
+            this.lines.push(line);
+        }
+        this.#addRemoveHelper();
+    }
+
+    replaceLine(line, index) {
+        this.lines.splice(index, 1, line);
         this.#addRemoveHelper();
     }
 

@@ -4,7 +4,53 @@ import Song from "../classes/Song.js";
 function displayComposedNotes(song) {
     const composedNotesElem = document.querySelector("#composed-notes");
     composedNotesElem.innerHTML = song.getLinesHTML();
+    addReplaceLineButtonHandlers(song);
+    addLineBelowButtonHandlers(song);
     addRemoveLineButtonHandlers(song);
+}
+
+function getNotesFormData(formElem) {
+    const noteLength = formElem["note-length"].value,
+        entries = [...new FormData(formElem).entries()]
+            .filter(([key]) => key !== "note-length")
+            .map(([key]) => [key, noteLength]);
+    return new Line(
+        new Map(entries.length ? entries : [["3G*", `${noteLength}r`]])
+    );
+}
+
+function handleAddNotesFormSubmit(e, song) {
+    e.preventDefault();
+    song.addLine(getNotesFormData(e.target));
+    displayComposedNotes(song);
+}
+
+function addReplaceLineButtonHandlers(song) {
+    document.querySelectorAll(".replace-line").forEach(
+        (button) =>
+            (button.onclick = (e) => {
+                const index = button.getAttribute("data-index"),
+                    line = getNotesFormData(
+                        document.querySelector("#add-notes")
+                    );
+                song.replaceLine(line, index);
+                displayComposedNotes(song);
+            })
+    );
+}
+
+function addLineBelowButtonHandlers(song) {
+    document.querySelectorAll(".add-line-below").forEach(
+        (button) =>
+            (button.onclick = (e) => {
+                const index = button.getAttribute("data-index"),
+                    line = getNotesFormData(
+                        document.querySelector("#add-notes")
+                    );
+                song.addLine(line, index);
+                displayComposedNotes(song);
+            })
+    );
 }
 
 function addRemoveLineButtonHandlers(song) {
@@ -16,20 +62,6 @@ function addRemoveLineButtonHandlers(song) {
                 displayComposedNotes(song);
             })
     );
-}
-
-function handleAddNotesFormSubmit(e, song) {
-    e.preventDefault();
-    const noteLength = e.target["note-length"].value,
-        entries = [...new FormData(e.target).entries()]
-            .filter(([key]) => key !== "note-length")
-            .map(([key]) => [key, noteLength]);
-    song.addLine(
-        new Line(
-            new Map(entries.length ? entries : [["3G*", `${noteLength}r`]])
-        )
-    );
-    displayComposedNotes(song);
 }
 
 function handleChangeNoteLength(e) {
@@ -72,6 +104,7 @@ function handleUploadSong(e) {
 }
 
 export {
+    addReplaceLineButtonHandlers,
     handleAddNotesFormSubmit,
     handleChangeNoteLength,
     handleClearInputs,
