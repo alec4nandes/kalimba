@@ -8,32 +8,62 @@ export default class Line {
         );
     }
 
+    getNote() {
+        return [...this.notes.values()].find(Boolean);
+    }
+
+    getNotes() {
+        return this.notes;
+    }
+
+    replaceNoteLength(noteLetter) {
+        return new Line(
+            new Map(
+                [...this.notes.entries()]
+                    .filter(([key, val]) => val)
+                    .map(([key]) => [key, noteLetter])
+            )
+        );
+    }
+
     getNotesString() {
         return JSON.stringify(
             [...this.notes.entries()].filter(([key, value]) => value)
         );
     }
 
-    getLineHTML() {
+    getLineHTML(index) {
         const arr = [...this.notes.values()],
             lastNoteIndex = arr.findLastIndex((item) => item),
-            noteLength = arr[lastNoteIndex],
+            noteLength = arr[lastNoteIndex].replace(".", ""),
+            hasDot = arr[lastNoteIndex].includes("."),
             result = [
-                "flags/" +
-                    (!noteLength || noteLength === "w"
-                        ? "no-flag"
-                        : ["q", "h"].includes(noteLength)
-                        ? "mast-flag"
-                        : `${noteLength}-flag`),
+                noteLength.includes("r")
+                    ? "space"
+                    : "flags/" +
+                      (!noteLength || noteLength === "w"
+                          ? "no-flag"
+                          : ["q", "h"].includes(noteLength)
+                          ? "mast-flag"
+                          : `${noteLength}-flag`),
                 ...arr.map((item, i) =>
                     item
-                        ? (item === "w"
-                              ? "whole"
-                              : ["s", "e", "q"].includes(item)
-                              ? "black"
-                              : "white") +
-                          (item !== "w" && i === lastNoteIndex ? "-end" : "")
-                        : i > lastNoteIndex || noteLength === "w"
+                        ? noteLength.includes("r")
+                            ? `rests/${noteLength}` + (hasDot ? "-dot" : "")
+                            : (item === "w"
+                                  ? "whole"
+                                  : ["s", "s.", "e", "e.", "q", "q."].includes(
+                                        item
+                                    )
+                                  ? "black"
+                                  : "white") +
+                              (hasDot ? "-dot" : "") +
+                              (item !== "w" && i === lastNoteIndex
+                                  ? "-end"
+                                  : "")
+                        : noteLength.includes("r") ||
+                          i > lastNoteIndex ||
+                          noteLength === "w"
                         ? "space"
                         : "mast"
                 ),
@@ -46,6 +76,15 @@ export default class Line {
                     `
                 )
                 .join("");
-        return `<div class="line">${result}</div>`;
+        return `
+            <div class="line">
+                ${result}
+                <div class="note-container">
+                    <button class="remove-line" data-index="${index}">
+                        x
+                    </button>
+                </div>
+            </div>
+        `;
     }
 }

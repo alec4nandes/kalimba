@@ -4,16 +4,31 @@ import Song from "../classes/Song.js";
 function displayComposedNotes(song) {
     const composedNotesElem = document.querySelector("#composed-notes");
     composedNotesElem.innerHTML = song.getLinesHTML();
+    addRemoveLineButtonHandlers(song);
+}
+
+function addRemoveLineButtonHandlers(song) {
+    document.querySelectorAll(".remove-line").forEach(
+        (button) =>
+            (button.onclick = () => {
+                const index = button.getAttribute("data-index");
+                song.removeLine(index);
+                displayComposedNotes(song);
+            })
+    );
 }
 
 function handleAddNotesFormSubmit(e, song) {
     e.preventDefault();
-    const map = new Map(
-        [...new FormData(e.target).entries()]
+    const noteLength = e.target["note-length"].value,
+        entries = [...new FormData(e.target).entries()]
             .filter(([key]) => key !== "note-length")
-            .map(([key]) => [key, e.target["note-length"].value])
+            .map(([key]) => [key, noteLength]);
+    song.addLine(
+        new Line(
+            new Map(entries.length ? entries : [["3G*", `${noteLength}r`]])
+        )
     );
-    song.addLine(new Line(map));
     displayComposedNotes(song);
 }
 

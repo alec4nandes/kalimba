@@ -9,6 +9,7 @@ export default function getAddNotesFormHTML() {
                 <div id="clear">clear</div>
             </div>
             ${allNotes.map(getNoteHeaderHTML).join("")}
+            <div class="note-container"></div>
         </div>
     `;
 }
