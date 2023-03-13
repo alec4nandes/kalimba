@@ -30,6 +30,7 @@
             import {
                 handleAddNotesSubmit,
                 handleClearInputs,
+                handleNewSongButtonClick,
                 handleSaveSongButtonClick,
                 handleSelectNoteLengthChange,
                 handleTimeSigFormSubmit,
@@ -44,6 +45,10 @@
 
             const saveSongButton = document.querySelector("button#save-song");
             saveSongButton.onclick = (e) => handleSaveSongButtonClick(lines);
+
+            const newSongButton = document.querySelector("button#new-song");
+            newSongButton.onclick = () =>
+                (lines = handleNewSongButtonClick(lines));
 
             const timeSig = document.querySelector("form#time-sig");
             timeSig.innerHTML = getTimeSigFormHTML();

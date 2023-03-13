@@ -63,7 +63,7 @@ function readLines(lines, timeSig) {
         bar = [];
     const [topNum, bottomNum] = timeSig.split("/"),
         maxBar = (topNum / bottomNum) * 16,
-        connectedBars = [],
+        tiedBars = [],
         result = [];
     for (const line of lines) {
         for (let i = 0; i < line.noteLength; i++) {
@@ -80,13 +80,13 @@ function readLines(lines, timeSig) {
                 result.push(bar);
                 bar = [];
                 ++measureCount;
-                !isLast && connectedBars.push(measureCount);
+                !isLast && tiedBars.push(measureCount);
             }
         }
     }
     // in case there's an incomplete bar at the end
     bar.length && result.push(bar);
-    return { lines: result, connectedBars, timeSig };
+    return { lines: result, tiedBars, timeSig };
 }
 
 function getTimeSig() {
@@ -128,31 +128,47 @@ function handleTimeSigFormSubmit(e, lines) {
 
 /* MODIFY LINES */
 
+function getButtonIndex(button) {
+    return button.getAttribute("data-index");
+}
+
+function hoverAcrossBars(button) {
+    const index = getButtonIndex(button),
+        { className } = button;
+    button.onmouseover = () => hoverAcrossBarsHelper(index, className, true);
+    button.onmouseout = () => hoverAcrossBarsHelper(index, className, false);
+}
+
+function hoverAcrossBarsHelper(index, className, isMouseOver) {
+    document
+        .querySelectorAll(`button.${className}[data-index='${index}']`)
+        .forEach((elem) =>
+            elem.classList[isMouseOver ? "add" : "remove"]("hovering")
+        );
+}
+
 function addReplaceLineButtonHandlers(lines) {
-    document.querySelectorAll(".replace-line").forEach(
-        (button) =>
-            (button.onclick = (e) => {
-                const index = button.getAttribute("data-index");
-                handleAddNotesSubmit(e, lines, index);
-            })
-    );
+    document.querySelectorAll(".replace-line").forEach((button) => {
+        const index = getButtonIndex(button);
+        button.onclick = (e) => handleAddNotesSubmit(e, lines, index);
+        hoverAcrossBars(button);
+    });
 }
 
 function addLineBelowButtonHandlers(lines) {
     document.querySelectorAll(".add-line-below").forEach((button) => {
-        const index = button.getAttribute("data-index");
+        const index = getButtonIndex(button);
         button.onclick = (e) => handleAddNotesSubmit(e, lines, index, true);
+        hoverAcrossBars(button);
     });
 }
 
 function addRemoveLineButtonHandlers(lines) {
-    document.querySelectorAll(".remove-line").forEach(
-        (button) =>
-            (button.onclick = () => {
-                const index = button.getAttribute("data-index");
-                removeLine(lines, index);
-            })
-    );
+    document.querySelectorAll(".remove-line").forEach((button) => {
+        const index = getButtonIndex(button);
+        button.onclick = () => removeLine(lines, index);
+        hoverAcrossBars(button);
+    });
     function removeLine(lines, index) {
         lines.splice(index, 1);
         displayLinesHelper(lines);
@@ -179,9 +195,22 @@ function download(filename, text) {
     document.body.removeChild(element);
 }
 
+/* NEW SONG */
+
+function handleNewSongButtonClick(lines) {
+    const proceed = confirm("All composed notes will be lost. Proceed?");
+    if (proceed) {
+        displayLinesHelper([]);
+        return [];
+    } else {
+        return lines;
+    }
+}
+
 export {
     handleAddNotesSubmit,
     handleClearInputs,
+    handleNewSongButtonClick,
     handleSaveSongButtonClick,
     handleSelectNoteLengthChange,
     handleTimeSigFormSubmit,

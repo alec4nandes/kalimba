@@ -141,7 +141,9 @@ body {
                         border-radius: 3px;
                         flex: 1;
 
-                        &:hover {
+                        // simlate hovering across bars
+                        // with js-added class
+                        &.hovering {
                             cursor: pointer;
                             opacity: 0.6;
                         }

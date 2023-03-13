@@ -14,33 +14,35 @@ export default function displayLines(song) {
             15: "white-3-dot",
             16: "whole",
         },
-        // reverse since notes are read bottom to top
-        bars = [...song.lines],
-        connectedBars = song.connectedBars.map(
-            (connIndex) => bars.length - connIndex
-        );
-    bars.reverse();
-
-    document.querySelector("#composed-notes").innerHTML = bars
-        .map((bar, barIndex) => {
-            // reverse since notes are read bottom to top
-            const b = [...bar];
-            b.reverse();
-            return `
-                ${b
+        { lines: bars, tiedBars } = song;
+    let indexCount = 0;
+    document.querySelector("#composed-notes").innerHTML = [...bars]
+        .map(
+            (bar, barIndex) => `
+                ${[...bar]
                     .map((line, i) => {
-                        const reversedIndex = Math.abs(i - b.length) - 1;
-                        return getLineHTML(line, reversedIndex);
+                        const result = getLineHTML(line, indexCount),
+                            isLast = i === bar.length - 1,
+                            isTiedBar =
+                                isLast && tiedBars.includes(barIndex + 1);
+                        // keep the same index across tied bars
+                        // to keep notes together while editing
+                        !isTiedBar && ++indexCount;
+                        return result;
                     })
+                    // reverse since notes are read bottom to top
+                    .reverse()
                     .join("")}
-                ${getBarHTML(connectedBars.includes(barIndex + 1), bar[0])}
-            `;
-        })
+                ${getBarHTML(tiedBars.includes(barIndex), bar[0])}
+            `
+        )
+        // reverse since notes are read bottom to top
+        .reverse()
         .join("");
 
     function getLineHTML(line, index) {
-        // reverse since notes are read bottom to top
         const tiedNote = [...tiedNotes[line.noteLength]];
+        // reverse since notes are read bottom to top
         tiedNote.reverse();
         return `
             <div class="line">
@@ -59,7 +61,7 @@ export default function displayLines(song) {
                     <span>
                         ${tiedNote
                             .map((tied) => getFlagImageHTML(line.notes, tied))
-                            .join(line.notes.length ? getFlagImageHTML() : "")}
+                            .join(getFlagImageHTML())}
                     </span>
                 </div>
                 ${allNotes
@@ -107,11 +109,7 @@ export default function displayLines(song) {
                             ? getRestImageHTML(tiedNote)
                             : tiedNote
                                   .map((tied) => getNoteImageHTML(tied))
-                                  .join(
-                                      line.notes.length
-                                          ? getTiedImageHTML()
-                                          : ""
-                                  )
+                                  .join(getTiedImageHTML())
                     }
                     </span>
                 </div>
@@ -136,7 +134,7 @@ export default function displayLines(song) {
                         (tied) =>
                             `<img src="../assets/rests/${restFileNames[tied]}.png" />`
                     )
-                    .join("");
+                    .join(getTiedImageHTML());
             }
 
             function getNoteImageHTML(tied) {
@@ -155,7 +153,8 @@ export default function displayLines(song) {
             function getTiedImageHTML() {
                 return `
                     <img src="../assets/${
-                        line.notes?.includes(lineNote) && tiedNote.length > 1
+                        line.notes.includes(lineNote) ||
+                        (!line.notes.length && lineNote === "3G*")
                             ? "tied"
                             : "space"
                     }.png" />
@@ -164,7 +163,7 @@ export default function displayLines(song) {
         }
     }
 
-    function getBarHTML(isConnected, barLine) {
+    function getBarHTML(isTied, barLine) {
         return `
             <div class="line">
                 <div class="note-container"></div>
@@ -174,8 +173,11 @@ export default function displayLines(song) {
                         (note) => `
                             <div class="note-container">
                                 <img src="../assets/bar${
-                                    isConnected && barLine.notes.includes(note)
-                                        ? "-connected"
+                                    isTied &&
+                                    (barLine.notes.includes(note) ||
+                                        (!barLine.notes.length &&
+                                            note === "3G*"))
+                                        ? "-tied"
                                         : ""
                                 }.png" />
                             </div>

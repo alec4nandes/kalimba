@@ -104,7 +104,7 @@ body #song .line .note-container:first-child button {
   border-radius: 3px;
   flex: 1;
 }
-body #song .line .note-container:first-child button:hover {
+body #song .line .note-container:first-child button.hovering {
   cursor: pointer;
   opacity: 0.6;
 }
