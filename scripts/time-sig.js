@@ -1,8 +1,6 @@
 import { noteLengths } from "./kalimba-data.js";
 
 export default function getTimeSigFormHTML() {
-    const bottomNums = { s: 16, e: 8, q: 4, h: 2, w: 1 };
-
     return `
         <div id="display-time-sig">time signature: <span>4/4</span></div>
         <label>
@@ -16,10 +14,10 @@ export default function getTimeSigFormHTML() {
                     .map(
                         (len) => `
                             <option
-                                value="${bottomNums[len[0]]}"
-                                ${len === "quarter" ? "selected" : ""}
+                                value="${len.timeSig}"
+                                ${len.name === "quarter" ? "selected" : ""}
                             ">
-                                ${len[0].toUpperCase()}
+                                ${len.name[0].toUpperCase()}
                             </option>
                        `
                     )

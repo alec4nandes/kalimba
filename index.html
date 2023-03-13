@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="./css/style.css" />
         <title>Kalimba Song Composer</title>
     </head>
     <body>
@@ -25,41 +25,40 @@
         </div>
 
         <script type="module">
-            import Song from "./classes/Song.js";
             import getTimeSigFormHTML from "./scripts/time-sig.js";
             import getAddNotesFormHTML from "./scripts/add-notes.js";
             import {
-                handleTimeSigFormSubmit,
-                handleAddNotesFormSubmit,
-                handleChangeNoteLength,
+                handleAddNotesSubmit,
                 handleClearInputs,
-                handleNewSong,
-                handleUploadSong,
+                handleSaveSongButtonClick,
+                handleSelectNoteLengthChange,
+                handleTimeSigFormSubmit,
+                handleUploadSongSubmit,
             } from "./scripts/handlers.js";
 
-            let song = new Song();
+            let lines = [];
 
-            const timeSig = document.querySelector("#time-sig");
+            const uploadSongForm = document.querySelector("form#upload-song");
+            uploadSongForm.onsubmit = async (e) =>
+                (lines = await handleUploadSongSubmit(e));
+
+            const saveSongButton = document.querySelector("button#save-song");
+            saveSongButton.onclick = (e) => handleSaveSongButtonClick(lines);
+
+            const timeSig = document.querySelector("form#time-sig");
             timeSig.innerHTML = getTimeSigFormHTML();
-            timeSig.onsubmit = (e) => handleTimeSigFormSubmit(e, song);
+            timeSig.onsubmit = (e) => handleTimeSigFormSubmit(e, lines);
 
-            const addNotesForm = document.querySelector("#add-notes");
+            const addNotesForm = document.querySelector("form#add-notes");
             addNotesForm.innerHTML = getAddNotesFormHTML();
-            addNotesForm.onsubmit = (e) => handleAddNotesFormSubmit(e, song);
+            addNotesForm.onsubmit = (e) => handleAddNotesSubmit(e, lines);
 
-            document.querySelector("#note-length").onchange =
-                handleChangeNoteLength;
+            const clearInputs = document.querySelector("#clear");
+            clearInputs.onclick = handleClearInputs;
 
-            document.querySelector("#clear").onclick = handleClearInputs;
-
-            document.querySelector("#save-song").onclick = () =>
-                song.writeFile();
-
-            document.querySelector("#upload-song").onsubmit = async (e) =>
-                (song = await handleUploadSong(e));
-
-            document.querySelector("#new-song").onclick = () =>
-                (song = handleNewSong(song));
+            const noteLengthSelect =
+                document.querySelector("select#note-length");
+            noteLengthSelect.onchange = handleSelectNoteLengthChange;
         </script>
     </body>
 </html>

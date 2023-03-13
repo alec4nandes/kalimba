@@ -3,13 +3,13 @@ import { allNotes, noteLengths } from "./kalimba-data.js";
 export default function getAddNotesFormHTML() {
     return `
         <div class="line">
-            <div class="note-container">
+            <div class="note-container"></div>
+            <div class="note-container specs">
                 ${getSelectNoteLengthHTML()}
                 <button type="submit">+</button>
                 <div id="clear">clear</div>
             </div>
             ${allNotes.map(getNoteHeaderHTML).join("")}
-            <div class="note-container"></div>
         </div>
     `;
 }
@@ -18,20 +18,26 @@ function getSelectNoteLengthHTML() {
     return `
         <select id="note-length" name="note-length">
             ${noteLengths
-                .map((len) => [
+                .map((len, i) => [
                     `
                         <option
-                            value="${len[0]}"
-                            ${len === "quarter" ? "selected" : ""}
+                            value="${len.size}"
+                            ${len.name === "quarter" ? "selected" : ""}
                         >
-                            ${len[0].toUpperCase()}
+                            ${len.name[0].toUpperCase()}
                         </option>
                     `,
-                    `
-                        <option value="${len[0]}.">
-                            ${len[0].toUpperCase()}&bull;
-                        </option>
-                    `,
+                    // no dotted sixteenth note or dotted whole note
+                    // (16th = smallest and whole = largest notes)
+                    ...(i && i !== noteLengths.length - 1
+                        ? [
+                              `
+                                <option value="${len.size * 1.5}">
+                                    ${len.name[0].toUpperCase()}&bull;
+                                </option>
+                            `,
+                          ]
+                        : []),
                 ])
                 .flat()
                 .join("")}

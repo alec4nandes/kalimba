@@ -31,7 +31,6 @@ body {
                 }
             }
 
-            &.s-dot,
             &.e-dot,
             &.q-dot {
                 input[type="checkbox"]:checked {
@@ -54,12 +53,6 @@ body {
             &.w {
                 input[type="checkbox"]:checked {
                     background-image: url("../assets/whole.png");
-                }
-            }
-
-            &.w-dot {
-                input[type="checkbox"]:checked {
-                    background-image: url("../assets/whole-dot.png");
                 }
             }
 
@@ -118,7 +111,6 @@ body {
                 width: 20px;
                 display: flex;
                 flex-direction: column;
-                justify-content: flex-end;
                 font-size: 0.7rem;
                 padding: 5px 0;
                 position: relative;
@@ -129,17 +121,20 @@ body {
                     z-index: 1;
                 }
 
-                &:first-child {
+                &.flag,
+                &.specs {
                     width: 40px;
                 }
 
-                &:last-child {
+                &:first-child {
                     width: 80px;
+                    align-items: center;
                     flex-direction: row;
                     gap: 3px;
                     justify-content: space-evenly;
 
                     button {
+                        height: 20px;
                         appearance: none;
                         background-color: lavender;
                         border: 0;
@@ -153,7 +148,7 @@ body {
                     }
                 }
 
-                &:not(:first-child):not(:last-child)::after {
+                &:not(:first-child):not(:nth-child(2)):not(:last-child)::after {
                     border-left: 0.25px solid #eee;
                     border-right: 0.25px solid #eee;
                     content: "";
@@ -164,31 +159,31 @@ body {
                     left: 0;
                 }
 
-                &:nth-child(6)::after,
-                &:nth-child(21)::after {
+                &:nth-child(7)::after,
+                &:nth-child(22)::after {
                     border-right: 1px solid red !important;
                 }
 
-                &:nth-child(7)::after,
-                &:nth-child(22)::after {
+                &:nth-child(8)::after,
+                &:nth-child(23)::after {
                     border-left: 1px solid red !important;
                 }
 
-                &:nth-child(2)::after,
-                &:nth-child(6)::after,
+                &:nth-child(3)::after,
                 &:nth-child(7)::after,
-                &:nth-child(10)::after,
-                &:nth-child(13)::after,
-                &:nth-child(15)::after,
-                &:nth-child(18)::after,
-                &:nth-child(21)::after,
-                &:nth-child(23)::after,
-                &:nth-child(26)::after {
+                &:nth-child(8)::after,
+                &:nth-child(11)::after,
+                &:nth-child(14)::after,
+                &:nth-child(16)::after,
+                &:nth-child(19)::after,
+                &:nth-child(22)::after,
+                &:nth-child(24)::after,
+                &:nth-child(27)::after {
                     background-color: rgb(255, 234, 237);
                 }
 
                 &.flag {
-                    align-items: flex-end;
+                    text-align: right;
                 }
 
                 img {
