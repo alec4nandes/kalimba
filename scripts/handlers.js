@@ -108,8 +108,13 @@ function handleTimeSigFormSubmit(e, song) {
     const topNum = e.target["num-notes"].value,
         bottomNum = e.target["note-length"].value,
         timeSig = `${topNum}/${bottomNum}`;
-    song.setTimeSig(timeSig);
-    displayComposedNotes(song);
+    const result = song.setTimeSig(timeSig);
+    if (result) {
+        displayComposedNotes(song);
+        document
+            .querySelector("#display-time-sig")
+            .querySelector("span").innerText = timeSig;
+    }
 }
 
 export {

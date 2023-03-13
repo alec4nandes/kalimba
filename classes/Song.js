@@ -13,19 +13,6 @@ export default class Song {
                 .map((line) => new Line(new Map(JSON.parse(line)))) || [];
     }
 
-    #noteInfo = {
-        s: 1 / 16,
-        "s.": (1 / 16) * 1.5,
-        e: 1 / 8,
-        "e.": (1 / 8) * 1.5,
-        q: 1 / 4,
-        "q.": (1 / 4) * 1.5,
-        h: 1 / 2,
-        "h.": (1 / 2) * 1.5,
-        w: 1,
-        "w.": 1.5,
-    };
-
     #getMaxBar() {
         const [numberOf, notes] = this.timeSig.split("/").map((str) => +str),
             max = numberOf * (1 / notes);
@@ -33,13 +20,14 @@ export default class Song {
     }
 
     getLinesHTML() {
+        const connectedMeasures = this.connectedMeasures;
         let total = 0,
             measureCount = 0;
         const max = this.#getMaxBar(),
             copy = [...this.lines]
                 .map((line, index) => {
-                    const note = line.getNote().replace("r", "");
-                    total += this.#noteInfo[note];
+                    const noteSize = line.getNoteSize();
+                    total += noteSize;
                     const addBar = total === max;
                     if (addBar) {
                         total = 0;
@@ -47,59 +35,43 @@ export default class Song {
                     }
                     return [
                         line.getLineHTML(index),
-                        addBar
-                            ? `
-                                <div class="line">
-                                    ${[
-                                        `<div class="note-container"></div>`,
-                                        [...line.getNotes().entries()]
-                                            .map(
-                                                ([key, val]) => `
-                                                    <div class="note-container">
-                                                        <span>
-                                                            <img src="assets/${
-                                                                val &&
-                                                                this.connectedMeasures.includes(
-                                                                    measureCount
-                                                                )
-                                                                    ? "bar-connected"
-                                                                    : "bar"
-                                                            }.png" />
-                                                        </span>
-                                                    </div>
-                                                `
-                                            )
-                                            .join(""),
-                                        `<div class="note-container"></div>`,
-                                    ].join("")}
-                                </div>`
-                            : [],
+                        addBar ? makeBar(line, measureCount) : [],
                     ];
                 })
                 .flat();
-        console.log(copy);
         copy.reverse();
         return copy.join("");
+
+        function makeBar(line, measureCount) {
+            const isConnected = connectedMeasures.includes(measureCount);
+            return `
+                <div class="line">
+                    ${[
+                        `<div class="note-container"></div>`,
+                        [...line.getNotes().entries()]
+                            .map(
+                                ([key, val]) => `
+                                    <div class="note-container">
+                                        <span>
+                                            <img src="assets/${
+                                                val && isConnected
+                                                    ? "bar-connected"
+                                                    : "bar"
+                                            }.png" />
+                                        </span>
+                                    </div>
+                                `
+                            )
+                            .join(""),
+                        `<div class="note-container"></div>`,
+                    ].join("")}
+                </div>
+            `;
+        }
     }
 
     setTimeSig(timeSig) {
-        // combine bars with old time sig:
-        const combined = this.#combineLinkedBars(this.lines);
-        if (combined) {
-            const oldLines = this.lines,
-                oldTimeSig = this.timeSig;
-            this.lines = combined;
-            this.timeSig = timeSig;
-            const result = this.#addRemoveHelper();
-            if (!result) {
-                this.lines = oldLines;
-                this.timeSig = oldTimeSig;
-            } else {
-                document
-                    .querySelector("#display-time-sig")
-                    .querySelector("span").innerText = this.timeSig;
-            }
-        }
+        return this.#addRemoveHelper(timeSig);
     }
 
     addLine(line, index) {
@@ -109,7 +81,6 @@ export default class Song {
             this.lines.push(line);
         }
         this.#addRemoveHelper();
-        console.log(this.connectedMeasures);
     }
 
     replaceLine(line, index) {
@@ -122,20 +93,78 @@ export default class Song {
         this.#addRemoveHelper();
     }
 
-    #addRemoveHelper() {
-        const combined = this.#combineLinkedBars(this.lines);
+    #addRemoveHelper(timeSig) {
+        const oldTimeSig = this.timeSig,
+            // combine with old timeSig
+            combined = this.#combineLinkedBars(this.lines);
         if (combined) {
+            // split bars with new timeSig and combined lines
+            timeSig && (this.timeSig = timeSig);
             const result = this.#findMeasuresRecursive(combined);
             if (result) {
                 this.lines = result.lines;
                 this.connectedMeasures = result.connectedMeasures;
                 return true;
-            } else {
-                return false;
+            } else if (timeSig) {
+                // revert to old time signature
+                this.timeSig = oldTimeSig;
             }
-        } else {
-            return false;
         }
+        return false;
+    }
+
+    #combineLinkedBars(lines) {
+        const max = this.#getMaxBar(),
+            combined = [];
+        let measure = 0,
+            total = 0,
+            lastLineWasCombined = false;
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i],
+                isRest = line.isRest(),
+                pushLine = (line) =>
+                    lastLineWasCombined
+                        ? (lastLineWasCombined = false)
+                        : combined.push(line);
+            let noteSize = line.getNoteSize();
+            total += noteSize;
+            if (total === max) {
+                // hit end of bar:
+                ++measure;
+                total = 0;
+                if (this.connectedMeasures.includes(measure)) {
+                    // connect this line and the next
+                    const nextLine = lines[i + 1],
+                        nextSize = nextLine.getNoteSize();
+                    if (nextLine) {
+                        noteSize = lastLineWasCombined
+                            ? // get last note size
+                              combined.at(-1).getNoteSize()
+                            : noteSize;
+                        const combinedLength = noteSize + nextSize,
+                            newLine = this.#makeNewLine(
+                                combinedLength,
+                                line,
+                                isRest
+                            );
+                        if (newLine) {
+                            lastLineWasCombined &&
+                                // update note across multiple measures
+                                combined.pop();
+                            combined.push(newLine);
+                            lastLineWasCombined = true;
+                        } else {
+                            return false;
+                        }
+                    }
+                } else {
+                    pushLine(line);
+                }
+            } else {
+                pushLine(line);
+            }
+        }
+        return combined;
     }
 
     #findMeasuresRecursive(lines, connectedMeasures = [], measureCount = 0) {
@@ -144,12 +173,10 @@ export default class Song {
             result = lines;
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i],
-                n = line.getNote(),
-                note = n.replace("r", ""),
-                isRest = n.includes("r"),
-                isLastIndex = i === lines.length - 1;
-            total += this.#noteInfo[note];
-            console.log(total);
+                isRest = line.isRest(),
+                isLastIndex = i === lines.length - 1,
+                noteSize = line.getNoteSize();
+            total += noteSize;
             if (total === max) {
                 ++measureCount;
                 if (isLastIndex) break;
@@ -157,10 +184,10 @@ export default class Song {
             } else if (total < max) {
                 if (isLastIndex) break;
             } else if (total > max) {
-                const nextNoteLength = total - max,
-                    lastNoteLength = this.#noteInfo[note] - nextNoteLength,
+                const nextNoteSize = total - max,
+                    lastNoteLength = noteSize - nextNoteSize,
                     lastLine = this.#makeNewLine(lastNoteLength, line, isRest),
-                    nextLine = this.#makeNewLine(nextNoteLength, line, isRest);
+                    nextLine = this.#makeNewLine(nextNoteSize, line, isRest);
                 if (lastLine && nextLine) {
                     const newLines = [...lines];
                     newLines.splice(i, 1, lastLine, nextLine);
@@ -182,64 +209,9 @@ export default class Song {
             : false;
     }
 
-    #combineLinkedBars(lines) {
-        const max = this.#getMaxBar(),
-            combined = [];
-        let measure = 0,
-            total = 0,
-            lastLineWasCombined = false;
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i],
-                n = line.getNote(),
-                note = n.replace("r", ""),
-                isRest = n.includes("r"),
-                noteSize = this.#noteInfo[note],
-                pushLine = (line) =>
-                    lastLineWasCombined
-                        ? (lastLineWasCombined = false)
-                        : combined.push(line);
-            total += noteSize;
-            // hit end of bar:
-            if (total === max) {
-                ++measure;
-                total = 0;
-                if (this.connectedMeasures.includes(measure)) {
-                    // connect this line and the next:
-                    const nextLine = lines[i + 1];
-                    if (nextLine) {
-                        const combinedLength =
-                                noteSize +
-                                this.#noteInfo[
-                                    nextLine.getNote().replace("r", "")
-                                ],
-                            newLine = this.#makeNewLine(
-                                combinedLength,
-                                line,
-                                isRest
-                            );
-                        if (newLine) {
-                            newLine && combined.push(newLine);
-                            lastLineWasCombined = true;
-                        } else {
-                            return false;
-                        }
-                    }
-                } else {
-                    pushLine(line);
-                }
-            } else {
-                pushLine(line);
-            }
-        }
-        return combined;
-    }
-
     #makeNewLine(noteLength, line, isRest) {
         try {
-            const noteLetter = Object.entries(this.#noteInfo).find(
-                (entry) => entry[1] === noteLength
-            )[0];
-            return line.replaceNoteLength(noteLetter + (isRest ? "r" : ""));
+            return line.replaceNoteLength(noteLength, isRest);
         } catch (err) {
             alert(
                 "A note had to be split accross bars, but one split note has an invalid length of " +

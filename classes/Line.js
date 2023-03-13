@@ -8,15 +8,44 @@ export default class Line {
         );
     }
 
-    getNote() {
-        return [...this.notes.values()].find(Boolean);
-    }
+    #sizes = {
+        s: 1 / 16,
+        "s.": (1 / 16) * 1.5,
+        e: 1 / 8,
+        "e.": (1 / 8) * 1.5,
+        q: 1 / 4,
+        "q.": (1 / 4) * 1.5,
+        h: 1 / 2,
+        "h.": (1 / 2) * 1.5,
+        w: 1,
+        "w.": 1.5,
+    };
 
     getNotes() {
         return this.notes;
     }
 
-    replaceNoteLength(noteLetter) {
+    getNote() {
+        return [...this.notes.values()].find(Boolean);
+    }
+
+    getNoteLength() {
+        return this.getNote().replace("r", "");
+    }
+
+    getNoteSize() {
+        return this.#sizes[this.getNoteLength()];
+    }
+
+    isRest() {
+        return this.getNote().includes("r");
+    }
+
+    replaceNoteLength(noteLength, isRest) {
+        const noteLetter =
+            Object.entries(this.#sizes).find(
+                (entry) => entry[1] === noteLength
+            )[0] + (isRest ? "r" : "");
         return new Line(
             new Map(
                 [...this.notes.entries()]
@@ -33,48 +62,24 @@ export default class Line {
     }
 
     getLineHTML(index) {
-        const arr = [...this.notes.values()],
-            lastNoteIndex = arr.findLastIndex((item) => item),
-            noteLength = arr[lastNoteIndex].replace(".", ""),
-            hasDot = arr[lastNoteIndex].includes("."),
+        const noteValues = [...this.notes.values()],
+            lastNoteIndex = noteValues.findLastIndex(Boolean),
+            noteLength = noteValues[lastNoteIndex].replace(".", ""),
             result = [
-                noteLength.includes("r")
-                    ? "space"
-                    : "flags/" +
-                      (!noteLength || noteLength === "w"
-                          ? "no-flag"
-                          : ["q", "h"].includes(noteLength)
-                          ? "mast-flag"
-                          : `${noteLength}-flag`),
-                ...arr.map((item, i) =>
-                    item
-                        ? noteLength.includes("r")
-                            ? `rests/${noteLength}` + (hasDot ? "-dot" : "")
-                            : (item === "w"
-                                  ? "whole"
-                                  : ["s", "s.", "e", "e.", "q", "q."].includes(
-                                        item
-                                    )
-                                  ? "black"
-                                  : "white") +
-                              (hasDot ? "-dot" : "") +
-                              (item !== "w" && i === lastNoteIndex
-                                  ? "-end"
-                                  : "")
-                        : noteLength.includes("r") ||
-                          i > lastNoteIndex ||
-                          noteLength === "w"
+                getFlagOrSpace(noteLength),
+                ...noteValues.map((item, i) => {
+                    const isLastNote = i === lastNoteIndex,
+                        isRest = noteLength.includes("r"),
+                        isPastLastNote = i > lastNoteIndex,
+                        isWholeNote = noteLength === "w";
+                    return item
+                        ? getNoteFileName(item, isLastNote)
+                        : isRest || isPastLastNote || isWholeNote
                         ? "space"
-                        : "mast"
-                ),
+                        : "mast";
+                }),
             ]
-                .map(
-                    (item, i) => `
-                        <div class="note-container ${i ? "" : "flag"}">
-                            <img src="/assets/${item}.png" />
-                        </div>
-                    `
-                )
+                .map(getNoteContainer)
                 .join("");
         return `
             <div class="line">
@@ -92,5 +97,39 @@ export default class Line {
                 </div>
             </div>
         `;
+
+        function getFlagOrSpace(noteLength) {
+            return noteLength.includes("r")
+                ? "space"
+                : "flags/" +
+                      (!noteLength || noteLength === "w"
+                          ? "no-flag"
+                          : ["q", "h"].includes(noteLength)
+                          ? "mast-flag"
+                          : `${noteLength}-flag`);
+        }
+
+        function getNoteFileName(item, isLastNote) {
+            const noteLength = noteValues[lastNoteIndex].replace(".", ""),
+                hasDot = noteValues[lastNoteIndex].includes("."),
+                isWholeNote = item === "w";
+            return noteLength.includes("r")
+                ? `rests/${noteLength}` + (hasDot ? "-dot" : "")
+                : (isWholeNote
+                      ? "whole"
+                      : ["s", "s.", "e", "e.", "q", "q."].includes(item)
+                      ? "black"
+                      : "white") +
+                      (hasDot ? "-dot" : "") +
+                      (!isWholeNote && isLastNote ? "-end" : "");
+        }
+
+        function getNoteContainer(item, i) {
+            return `
+                <div class="note-container ${i ? "" : "flag"}">
+                    <img src="/assets/${item}.png" />
+                </div>
+            `;
+        }
     }
 }
