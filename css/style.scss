@@ -22,6 +22,11 @@ body {
             }
         }
 
+        form#add-notes,
+        #composed-notes {
+            background-color: #fefeee;
+        }
+
         form#add-notes {
             &.s,
             &.e,
