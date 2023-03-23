@@ -1,3 +1,4 @@
+import { noteLengths } from "./kalimba-data.js";
 import displayLines from "./display-lines.js";
 
 const sample = [
@@ -17,6 +18,7 @@ async function handleUploadSongSubmit(e) {
     e.preventDefault();
     const [timeSig, ...song] = (await getFile()).split("\n"),
         lines = song.map((line) => JSON.parse(line));
+    setTimeSig(timeSig);
     displayLinesHelper(lines, timeSig);
     return lines;
 
@@ -28,6 +30,18 @@ async function handleUploadSongSubmit(e) {
             reader.onerror = reject;
             reader.readAsText(file);
         });
+    }
+
+    function setTimeSig(timeSig) {
+        const [top, bottom] = timeSig.split("/"),
+            timeSigForm = document.querySelector("#time-sig");
+        timeSigForm
+            .querySelector("#display-time-sig")
+            .querySelector("span").innerText = timeSig;
+        timeSigForm.querySelector("input[type='number']").value = +top;
+        timeSigForm.querySelector("select").value = noteLengths.find(
+            (info) => info.timeSig === +bottom
+        ).timeSig;
     }
 }
 
