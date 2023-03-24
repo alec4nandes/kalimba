@@ -39,9 +39,7 @@ async function handleUploadSongSubmit(e) {
             .querySelector("#display-time-sig")
             .querySelector("span").innerText = timeSig;
         timeSigForm.querySelector("input[type='number']").value = +top;
-        timeSigForm.querySelector("select").value = noteLengths.find(
-            (info) => info.timeSig === +bottom
-        ).timeSig;
+        timeSigForm.querySelector("select").value = +bottom;
     }
 }
 
