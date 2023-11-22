@@ -189,8 +189,12 @@ function addRemoveLineButtonHandlers(lines) {
 /* WRITE SONG TO FILE */
 
 function handleSaveSongButtonClick(lines) {
-    const text = lines.map((line) => JSON.stringify(line)).join("\n");
-    download("my-song.txt", getTimeSig() + "\n" + text);
+    const text = lines.map((line) => JSON.stringify(line)).join("\n"),
+        filename =
+            prompt("What would you like to call this file?")
+                .split(".")[0]
+                .trim() || "my-song";
+    download(`${filename}.txt`, getTimeSig() + "\n" + text);
 }
 
 function download(filename, text) {

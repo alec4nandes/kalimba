@@ -32,9 +32,9 @@ const noteLengths = [
     ]),
     allNotes = [...tines.values()].flat(Infinity),
     tiedNotes = {
-        // 1: sixteenth note
+        // 1: sixteenth note (1)
         1: [1],
-        // 2: eighth note
+        // 2: eighth note (2)
         2: [2],
         // 3: dotted eighth note (2+1)
         3: [3],
