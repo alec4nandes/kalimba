@@ -28,6 +28,8 @@
 {"noteLength":4,"notes":["4B*"]}
 {"noteLength":4,"notes":["4A*"]}
 {"noteLength":4,"notes":["4G"]}
+{"noteLength":4,"notes":["4A*"]}
+{"noteLength":4,"notes":["4G"]}
 {"noteLength":4,"notes":["4E*"]}
 {"noteLength":4,"notes":["5D*"]}
 {"noteLength":4,"notes":["5D*"]}
