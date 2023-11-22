@@ -18,7 +18,8 @@ body #song #upload-song input {
   background-color: #eee;
 }
 body #song form#add-notes,
-body #song #composed-notes {
+body #song #composed-notes,
+body #song #bottom-notes {
   background-color: #fefeee;
 }
 body #song form#add-notes.s input[type=checkbox]:checked, body #song form#add-notes.e input[type=checkbox]:checked, body #song form#add-notes.q input[type=checkbox]:checked {

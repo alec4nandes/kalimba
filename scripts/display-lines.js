@@ -1,4 +1,5 @@
 import { allNotes, tiedNotes } from "./kalimba-data.js";
+import { getNoteHeaderHTML } from "./add-notes.js";
 
 export default function displayLines(song) {
     const fileNames = {
@@ -39,6 +40,16 @@ export default function displayLines(song) {
         // reverse since notes are read bottom to top
         .reverse()
         .join("");
+
+    document.querySelector("#bottom-notes").innerHTML = `
+            <div class="line">
+                <div class="note-container"></div>
+                <div class="note-container flag"></div>
+                ${allNotes
+                    .map((note) => getNoteHeaderHTML(note, true))
+                    .join("")}
+            </div>
+        `;
 
     function getLineHTML(line, index) {
         const tiedNote = [...tiedNotes[line.noteLength]];

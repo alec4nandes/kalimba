@@ -1,4 +1,3 @@
-import { noteLengths } from "./kalimba-data.js";
 import displayLines from "./display-lines.js";
 
 const sample = [

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="./css/style.css" />
+        <meta charset="UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="./css/style.css"/>
         <title>Kalimba Song Composer</title>
     </head>
     <body>
@@ -12,7 +12,7 @@
 
         <div id="song">
             <form id="upload-song">
-                <label>upload song: <input type="file" name="upload" /></label>
+                <label>upload song: <input type="file" name="upload"/></label>
                 <button type="submit">upload</button>
             </form>
             <div id="song-buttons">
@@ -22,6 +22,7 @@
             <form id="time-sig"></form>
             <form id="add-notes" class="q"></form>
             <div id="composed-notes"></div>
+            <div id="bottom-notes"></div>
         </div>
 
         <script type="module">
@@ -34,21 +35,19 @@
                 handleSaveSongButtonClick,
                 handleSelectNoteLengthChange,
                 handleTimeSigFormSubmit,
-                handleUploadSongSubmit,
+                handleUploadSongSubmit
             } from "./scripts/handlers.js";
 
             let lines = [];
 
             const uploadSongForm = document.querySelector("form#upload-song");
-            uploadSongForm.onsubmit = async (e) =>
-                (lines = await handleUploadSongSubmit(e));
+            uploadSongForm.onsubmit = async (e) => (lines = await handleUploadSongSubmit(e));
 
             const saveSongButton = document.querySelector("button#save-song");
             saveSongButton.onclick = (e) => handleSaveSongButtonClick(lines);
 
             const newSongButton = document.querySelector("button#new-song");
-            newSongButton.onclick = () =>
-                (lines = handleNewSongButtonClick(lines));
+            newSongButton.onclick = () => (lines = handleNewSongButtonClick(lines));
 
             const timeSig = document.querySelector("form#time-sig");
             timeSig.innerHTML = getTimeSigFormHTML();
@@ -61,8 +60,7 @@
             const clearInputs = document.querySelector("#clear");
             clearInputs.onclick = handleClearInputs;
 
-            const noteLengthSelect =
-                document.querySelector("select#note-length");
+            const noteLengthSelect = document.querySelector("select#note-length");
             noteLengthSelect.onchange = handleSelectNoteLengthChange;
         </script>
     </body>

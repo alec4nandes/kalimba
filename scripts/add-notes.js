@@ -9,7 +9,7 @@ export default function getAddNotesFormHTML() {
                 <button type="submit">+</button>
                 <div id="clear">clear</div>
             </div>
-            ${allNotes.map(getNoteHeaderHTML).join("")}
+            ${allNotes.map((note) => getNoteHeaderHTML(note)).join("")}
         </div>
     `;
 }
@@ -45,7 +45,7 @@ function getSelectNoteLengthHTML() {
     `;
 }
 
-function getNoteHeaderHTML(note) {
+function getNoteHeaderHTML(note, hideInput) {
     return `
         <div class="note-container">
             <label>
@@ -54,9 +54,14 @@ function getNoteHeaderHTML(note) {
                 ${note?.slice(1).replace("*", "")}
                 <br/>
                 ${note.includes("*") ? "&bull;" : "&nbsp;"}
-                <br />
-                <input type="checkbox" name="${note}" />
+                ${
+                    hideInput
+                        ? ""
+                        : `<br /><input type="checkbox" name="${note}" />`
+                }
             </label>
         </div>
     `;
 }
+
+export { getNoteHeaderHTML };
