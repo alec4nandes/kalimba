@@ -36,33 +36,33 @@ const noteLengths = [
         1: [1],
         // 2: eighth note (2)
         2: [2],
-        // 3: dotted eighth note (2+1)
+        // 3: dotted eighth note (2 + 1 = 3)
         3: [3],
-        // 4: quarter note
+        // 4: quarter note (4)
         4: [4],
-        // 5: tied quarter and sixteenth note (4+1)
+        // 5: tied quarter and sixteenth note (4 + 1 = 5)
         5: [4, 1],
-        // 6: dotted quarter note
+        // 6: dotted quarter note (4 + 2 = 6)
         6: [6],
-        // 7: twice dotted quarter note (4+2+1)
+        // 7: twice dotted quarter note (4 + 2 + 1 = 7)
         7: [7],
-        // 8: half note
+        // 8: half note (8)
         8: [8],
-        // 9: tied half and sixteenth note (8+1)
+        // 9: tied half and sixteenth note (8 + 1 = 9)
         9: [8, 1],
-        // 10: tied half and eighth note (8+2)
+        // 10: tied half and eighth note (8 + 2 = 10)
         10: [8, 2],
-        // 11: tied half and dotted eighth note (8+3)
+        // 11: tied half and dotted eighth note (8 + 3 = 11)
         11: [8, 3],
-        // 12: dotted half note (8+4)
+        // 12: dotted half note (8 + 4 = 12)
         12: [12],
-        // 13: tied dotted half and 16th (12+1)
+        // 13: tied dotted half and 16th (12 + 1 = 13)
         13: [8, 4, 1],
-        // 14: twice dotted half note (8+4+2)
+        // 14: twice dotted half note (8 + 4 + 2 = 14)
         14: [14],
-        // 15: three dotted half note (8+4+2+1)
+        // 15: three dotted half note (8 + 4 + 2 + 1 = 15)
         15: [15],
-        // 16: whole note
+        // 16: whole note (16)
         16: [16],
     };
 
